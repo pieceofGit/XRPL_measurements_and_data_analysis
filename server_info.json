@@ -1,0 +1,59 @@
+{
+    "result": {
+        "info": {
+            "build_version": "1.9.4",
+            "complete_ledgers": "75564764-75593383",
+            "hostid": "LOLA",
+            "initial_sync_duration_us": "111982645",
+            "io_latency_ms": 1,
+            "jq_trans_overflow": "0",
+            "last_close": {
+                "converge_time_s": 2,
+                "proposers": 35
+            },
+            "load_factor": 1,
+            "network_id": 0,
+            "peer_disconnects": "456447",
+            "peer_disconnects_resources": "5190",
+            "peers": 341,
+            "pubkey_node": "n9Mh3iiqBobLzkAuzsSfYFAtcHtCYy4wQvPziMjcswKCtntM1bQ4",
+            "server_domain": "ripple.com",
+            "server_state": "full",
+            "server_state_duration_us": "341519921814",
+            "state_accounting": {
+                "connected": {
+                    "duration_us": "42044107",
+                    "transitions": "2"
+                },
+                "disconnected": {
+                    "duration_us": "66911946",
+                    "transitions": "2"
+                },
+                "full": {
+                    "duration_us": "3015282778234",
+                    "transitions": "2"
+                },
+                "syncing": {
+                    "duration_us": "6083748",
+                    "transitions": "2"
+                },
+                "tracking": {
+                    "duration_us": "353",
+                    "transitions": "2"
+                }
+            },
+            "time": "2022-Nov-07 14:02:15.201644 UTC",
+            "uptime": 3015397,
+            "validated_ledger": {
+                "age": 4,
+                "base_fee_xrp": 1e-05,
+                "hash": "579724FAE606BD8E99A09074403DADDDD216104B8E5ECBD0254103A3B82FA379",
+                "reserve_base_xrp": 10,
+                "reserve_inc_xrp": 2,
+                "seq": 75593383
+            },
+            "validation_quorum": 28
+        },
+        "status": "success"
+    }
+}

@@ -1,0 +1,128 @@
+{
+    "pub_key_of_node_1":
+    [
+        {
+          "ip": "54.238.31.106",
+          "port": 1221,
+          "peers": {},
+          "info": {
+            "build_version": "1.9.4",
+            "complete_ledgers": "75564764-75593383",
+            "hostid": "LOLA",
+            "initial_sync_duration_us": "111982645",    
+            "io_latency_ms": 1,         // Time spent waiting for I/O operations. Shows load issues
+            "jq_trans_overflow": "0",   // How often the server has had over 250 transactions in queue
+            "last_close": {
+                "converge_time_s": 2,
+                "proposers": 35
+            },
+            "load_factor": 1,
+            "network_id": 0,
+            "peer_disconnects": "456447",
+            "peer_disconnects_resources": "5190",
+            "peers": 341,   // Number of peers connected to
+            // "pubkey_node": "n9Mh3iiqBobLzkAuzsSfYFAtcHtCYy4wQvPziMjcswKCtntM1bQ4",
+            "server_domain": "ripple.com",
+            "server_state": "full",     // Type of network participation
+            "server_state_duration_us": "341519921814", // time of server in current state in microsec
+            "state_accounting": {   // Shows a map of server states with info about time spent in each. Good for longterm health tracking
+                "connected": {
+                    "duration_us": "42044107",  // overall time spent in this state
+                    "transitions": "2"  // transitions into this state
+                },
+                "disconnected": {
+                    "duration_us": "66911946",
+                    "transitions": "2"
+                },
+                "full": {
+                    "duration_us": "3015282778234",
+                    "transitions": "2"
+                },
+                "syncing": {
+                    "duration_us": "6083748",
+                    "transitions": "2"
+                },
+                "tracking": {
+                    "duration_us": "353",
+                    "transitions": "2"
+                }
+            },
+            "time": "2022-Nov-07 14:02:15.201644 UTC",
+            "uptime": 3015397,  // Time server has been operational
+            "validated_ledger": {
+                "age": 4,   // Time since the last ledger was closed, in seconds
+                "base_fee_xrp": 1e-05,
+                "hash": "579724FAE606BD8E99A09074403DADDDD216104B8E5ECBD0254103A3B82FA379",
+                "reserve_base_xrp": 10,     // Required minimum reserve amount for account
+                "reserve_inc_xrp": 2,       // Amount of XRP added to the account reserve for each object an account owns in ledger
+                "seq": 75593383         // Ledger index of latest validated ledger
+            },
+            "validation_quorum": 28     // Min number of trusted validators to validate a ledger version.
+        },
+        "status": "success"
+        }
+    ],
+    "pub_key_of_node_1":
+    [
+        {
+          "ip": "54.238.31.106",
+          "port": 1221,
+          "peers": {},
+          "info": {
+            "build_version": "1.9.4",
+            "complete_ledgers": "75564764-75593383",
+            "hostid": "LOLA",
+            "initial_sync_duration_us": "111982645",    
+            "io_latency_ms": 1,         // Time spent waiting for I/O operations. Shows load issues
+            "jq_trans_overflow": "0",   // How often the server has had over 250 transactions in queue
+            "last_close": {
+                "converge_time_s": 2,
+                "proposers": 35
+            },
+            "load_factor": 1,
+            "network_id": 0,
+            "peer_disconnects": "456447",
+            "peer_disconnects_resources": "5190",
+            "peers": 341,   // Number of peers connected to
+            // "pubkey_node": "n9Mh3iiqBobLzkAuzsSfYFAtcHtCYy4wQvPziMjcswKCtntM1bQ4",
+            "server_domain": "ripple.com",
+            "server_state": "full",     // Type of network participation
+            "server_state_duration_us": "341519921814", // time of server in current state in microsec
+            "state_accounting": {   // Shows a map of server states with info about time spent in each. Good for longterm health tracking
+                "connected": {
+                    "duration_us": "42044107",  // overall time spent in this state
+                    "transitions": "2"  // transitions into this state
+                },
+                "disconnected": {
+                    "duration_us": "66911946",
+                    "transitions": "2"
+                },
+                "full": {
+                    "duration_us": "3015282778234",
+                    "transitions": "2"
+                },
+                "syncing": {
+                    "duration_us": "6083748",
+                    "transitions": "2"
+                },
+                "tracking": {
+                    "duration_us": "353",
+                    "transitions": "2"
+                }
+            },
+            "time": "2022-Nov-07 14:02:15.201644 UTC",
+            "uptime": 3015397,  // Time server has been operational
+            "validated_ledger": {
+                "age": 4,   // Time since the last ledger was closed, in seconds
+                "base_fee_xrp": 1e-05,
+                "hash": "579724FAE606BD8E99A09074403DADDDD216104B8E5ECBD0254103A3B82FA379",
+                "reserve_base_xrp": 10,     // Required minimum reserve amount for account
+                "reserve_inc_xrp": 2,       // Amount of XRP added to the account reserve for each object an account owns in ledger
+                "seq": 75593383         // Ledger index of latest validated ledger
+            },
+            "validation_quorum": 28     // Min number of trusted validators to validate a ledger version.
+        },
+        "status": "success"
+        }
+    ]
+}
