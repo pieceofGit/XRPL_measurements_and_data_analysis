@@ -3,6 +3,7 @@ Currently only analysis info about one node. """
 import matplotlib.pyplot as plt
 import json
 import time
+import sys
 
 nodes = [{"host":"r.ripple.com", "port":"51234/"}]
 with open("../data_collection/node_measurements.json", "r") as f:
@@ -29,8 +30,9 @@ def get_peers():
     plt.xlabel("Latest validated ledger")
     plt.show()
 
+"""If the data is on a 15 minute interval, we have multiple writes."""
 
-
-
+print(json.dumps(data["r.ripple.com"][0]))
+print(sys.getsizeof(json.dumps(data["r.ripple.com"][0])))
 # get_convergence_time()
 get_peers()

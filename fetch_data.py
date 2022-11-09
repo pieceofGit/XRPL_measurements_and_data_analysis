@@ -7,25 +7,39 @@ PEER_PORT = "51235/"
 PUBLIC_PORT = "51234/"
 HOST = "https://r.ripple.com"
 # Request data
-# with open("crawl.json", "r") as f:
-#     response = json.load(f)
+with open("crawl.json", "r") as f:
+    response = json.load(f)
 # print(len(response["overlay"]["active"]))
-response = requests.get(HOST+":"+PUBLIC_PORT, timeout=2, verify=False, data=json.dumps({"method": "server_info","params": [{}]})).json()
-print(response)
+
 # # overlay, server, unl, version
-# success = 0
-# failed = 0
-# peers = response["overlay"]["active"]
-# random.shuffle(peers)
-# for active_peer in peers[0::10]:
-#     try:
-#         response = requests.get("http://"+active_peer["ip"]+":"+PEER_PORT+"health", timeout=2, verify=False)
-#         success += 1
-#     except Exception as e:
-#         print(e)
-#         failed += 1
-# print(success)
-# print(failed)
+success = 0
+failed = 0
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+peers = response["overlay"]["active"]
+random.shuffle(peers)
+for active_peer in peers:
+    try:
+        active_peer_ip = active_peer["ip"][7::] if active_peer["ip"][0] == ":" else active_peer["ip"]
+        print(active_peer_ip, active_peer["ip"])
+        response = requests.get("https://"+active_peer_ip+":"+PUBLIC_PORT, timeout=2, verify=False, data=json.dumps({"method": "server_info"}))
+        if response.status_code == 200:
+            print(response, response.json())
+        print(response)
+        success += 1
+    except Exception as e:
+        print(e)
+        failed += 1
+print(success)
+print(failed)
+
+
+# def get_validators_from_node(self):
+#     response = requests.get("https://"+self.validators_node, timeout=2, verify=False)
+#     self.nodes = response.json()
+#     self.nodes = json.loads(base64.b64decode(self.nodes["blob"]))
+#     print("MANIFEST STUFF", self.nodes["validators"][0]["manifest"])
+#     print(base64.b64decode(self.nodes["validators"][0]["manifest"]))
 
 # # Setup pipeline for storing data. 
 # # Data should be stored in database with time and public key
