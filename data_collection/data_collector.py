@@ -1,9 +1,11 @@
-from threading import Thread
-import json
-import requests
-import time
-import urllib3
 import base64
+import json
+import time
+from threading import Thread
+
+import requests
+import urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 """Currently a prototype storing data in json and only requesting data from one node"""
 class DataCollector:
@@ -18,7 +20,7 @@ class DataCollector:
         with open("node_measurements.json", "r") as f:
             self.data = json.load(f)
         with open("connected_nodes.json", "r") as f:
-            self.connected_nodes = json.load(f)
+            self.con_nodes = json.load(f)
         self.server_info_req = json.dumps({"method": "server_info", "params": [{}]})
         self.server_state_req = json.dumps({"method": "server_state", "params": [{}]})
     
@@ -29,7 +31,7 @@ class DataCollector:
                 json.dump(self.data, f, indent=4)
                 
             with open("connected_nodes.json", "w+") as f:
-                json.dump(self.connected_nodes, f, indent=4)
+                json.dump(self.con_nodes, f, indent=4)
                 
         except Exception as e:
             print("Could not store data: ", e)
@@ -39,7 +41,6 @@ class DataCollector:
         # try:
         response = requests.get("https://"+"r.ripple.com:"+self.peer_port+"/crawl", timeout=2, verify=False)
         json_response = response.json()
-        
         self.nodes = json_response["overlay"]["active"]
         # except Exception as e:
         #     print(e)
@@ -51,37 +52,54 @@ class DataCollector:
     #             json_response = requests.get("https://"+peer["ip"]+":"+self.peer_port, timeout=2, verify=False).json()
     #         except Exception as e:
     #             print(e)
+    
     def get_ipv4(self, ip):
+        """Returns ip addresses in ipv4 format"""
         if len(ip) > 15:
             return ip[7::]
         return ip
         
-    
+    def get_ports(self, node):
+        """Returns default ports or connected port"""
+        ports = ["51234", "51235", "2459"]
+        if "ip" in node:
+            if self.con_nodes.get(node["ip"], {}).get("port", 0):
+                return [self.con_nodes["ip"]["port"]]
+            if "port" in node:
+                ports.append(str(node["port"]))
+            return ports
+        return []
+           
     def fetch_data(self) -> None:
         """Periodically fetches data from nodes based on an interval"""
         self.get_peers()
         while True:
             for node in self.nodes:
+                # Node may not have registered ip or were unable to connect
+                # Either connected node on specific port, or need to check all ports
+                ports = self.get_ports(node)
+                connected = False
+                for port in ports:
                     try:
-                        # Node may not have registered ip or were unable to connect
-                        if not node.get("ip") in self.connected_nodes or self.connected_nodes[node["ip"]].get("connected") == True:    # Only fetch data from already connected or new nodes.
-                            response_obj = requests.get("https://"+self.get_ipv4(node["ip"])+":"+self.public_port,
-                                                    timeout=2, 
-                                                    verify=False, 
-                                                    data=self.server_state_req)
-                            print(response_obj.status_code)
-                            response = response_obj.json()
-                            print("RESPONSE SUCCESS")
-                            self.connected_nodes.setdefault(node["ip"], {"connected": True})
-                            self.connected_nodes.setdefault(node["ip"], {"server_state": response["result"]["state"]["server_state"]})
-                            self.data.setdefault(node["ip"], []).append(response["result"])
-                            self.connected_nodes[node["ip"]]["count_success"] = self.connected_nodes[node["ip"]].get("count_success", 0) + 1
-                            print("SUCCESS")
+                        response_obj = requests.get("https://"+self.get_ipv4(node["ip"])+":"+port,
+                                                timeout=2, verify=False, data=self.server_state_req)
+                        if response_obj.status_code == 200:
+                            response = response_obj.json()["result"]
+                            connected = True
+                            self.con_nodes.setdefault(node["ip"], {"connected": True})
+                            self.con_nodes.setdefault(node["ip"], {"server_state": response["state"]["server_state"]})
+                            self.data.setdefault(node["ip"], []).append(response)
+                            self.con_nodes[node["ip"]]["count_success"] = self.con_nodes[node["ip"]].get("count_success", 0) + 1
+                            print("SUCCESS", port)
+                            break
+                        if len(ports) == 1:
+                            self.con_nodes[node["ip"]]["count_failures"] = self.con_nodes[node["ip"]].get("count_failures", 0) + 1
+                        
                     except Exception as e:
-                        if "ip" in node:
-                            self.connected_nodes.setdefault(node["ip"],  {"connected": False})
-                            
-                        print("Could not fetch data: ", e)
+                        print("FAIL", port,node["ip"], e)
+            self.con_nodes.setdefault(node["ip"], {"connected": connected})
+
+                        
             self.persist_data()        
             time.sleep(self.interval)
 
