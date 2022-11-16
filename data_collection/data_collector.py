@@ -33,8 +33,7 @@ class DataCollector:
                 
         except Exception as e:
             print("Could not store data: ", e)
-            
-
+        
     def get_peers(self):
         """Fetches all 'active' nodes on the P2P overlay network"""
         # try:
