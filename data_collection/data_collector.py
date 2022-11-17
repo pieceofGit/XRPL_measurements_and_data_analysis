@@ -5,6 +5,10 @@ from threading import Thread
 
 import requests
 import urllib3
+import asyncio
+import websocket
+import ssl
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 """Currently a prototype storing data in json and only requesting data from one node"""
@@ -12,6 +16,7 @@ class DataCollector:
     """Periodically requests data about all nodes on XRPL nodes and stores in database"""
     def __init__(self, interval=60*15) -> None:
         self.nodes = None
+        self.test_nodes = [{"ip":"r.ripple.com"}, {"ip": "49.247.36.143"}, {"ip":"46.4.138.103"}]
         self.interval = interval
         self.public_port = "51234"
         self.peer_port = "51235"
@@ -69,37 +74,63 @@ class DataCollector:
                 ports.append(str(node["port"]))
             return ports
         return []
-           
+    
+    def set_con_nodes_dict(self, data, node, success):
+        """Adds data to dict for nodes connection info"""
+        if success:
+            self.con_nodes.setdefault(node["ip"], {"connected": True})
+            self.data.setdefault(node["ip"], []).append(data)
+            self.con_nodes[node["ip"]]["server_state"] = data["state"]["server_state"]
+            self.con_nodes[node["ip"]]["count_success"] = self.con_nodes[node["ip"]].get("count_success", 0) + 1
+        else:
+            self.con_nodes[node["ip"]]["count_failures"] = self.con_nodes[node["ip"]].get("count_failures", 0) + 1
+        
+    def fetch_with_socket(self, node, ip):
+        """Fetches data through an http get request and stores response"""
+        try:
+            ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})        
+            ws.connect("wss://"+self.get_ipv4(ip), timeout=2)
+            ws.send(json.dumps({"command":"server_state"}))
+            response = json.loads(ws.recv())["result"]
+            self.set_con_nodes_dict(response, node, True)
+            self.con_nodes.setdefault(ip, {"connected": True})
+            self.con_nodes[ip]["type"] = "SOCKET"
+            ws.close()
+            print("SOCKET SUCCESS")
+            return response
+        except Exception as e:
+            self.con_nodes.setdefault(ip, {"connected": False})
+            print("FAIL SOCKET", ip, e)
+            
+    def fetch_with_http(self, node, ip):
+        """Fetches data through an http get request and stores response"""
+        try:
+            response_obj = requests.get("https://"+self.get_ipv4(ip)+":"+self.public_port,
+                                    timeout=2, verify=False, data=self.server_state_req)
+            if response_obj.status_code == 200:
+                response = response_obj.json()["result"]
+                print(response)
+                self.set_con_nodes_dict(response, node, True)
+                self.con_nodes.setdefault(ip, {"connected": True})
+                self.con_nodes[ip]["type"] = "HTTP"
+                print("HTTP SUCCESS")
+                return response
+        except Exception as e:
+            print("FAIL HTTP", self.public_port,ip, e)
+            self.con_nodes.setdefault(ip, {"connected": False})
+            self.set_con_nodes_dict(None, node, False)
+            
     def fetch_data(self) -> None:
-        """Periodically fetches data from nodes based on an interval"""
+        """Periodically fetches data from nodes based on an interval with http or socket"""
         self.get_peers()
         while True:
-            for node in self.nodes:
-                # Node may not have registered ip or were unable to connect
-                # Either connected node on specific port, or need to check all ports
-                ports = self.get_ports(node)
-                connected = False
-                for port in ports:
-                    try:
-                        response_obj = requests.get("https://"+self.get_ipv4(node["ip"])+":"+port,
-                                                timeout=2, verify=False, data=self.server_state_req)
-                        if response_obj.status_code == 200:
-                            response = response_obj.json()["result"]
-                            connected = True
-                            self.con_nodes.setdefault(node["ip"], {"connected": True})
-                            self.con_nodes.setdefault(node["ip"], {"server_state": response["state"]["server_state"]})
-                            self.data.setdefault(node["ip"], []).append(response)
-                            self.con_nodes[node["ip"]]["count_success"] = self.con_nodes[node["ip"]].get("count_success", 0) + 1
-                            print("SUCCESS", port)
-                            break
-                        if len(ports) == 1:
-                            self.con_nodes[node["ip"]]["count_failures"] = self.con_nodes[node["ip"]].get("count_failures", 0) + 1
-                        
-                    except Exception as e:
-                        print("FAIL", port,node["ip"], e)
-            self.con_nodes.setdefault(node["ip"], {"connected": connected})
-
-                        
+            for node in self.test_nodes:
+                if node.get("ip", 0):
+                    ip = node["ip"]
+                    # for port in ports:
+                    response = self.fetch_with_http(node, ip)
+                    if not response:
+                        response = self.fetch_with_socket(node, ip) 
             self.persist_data()        
             time.sleep(self.interval)
 
