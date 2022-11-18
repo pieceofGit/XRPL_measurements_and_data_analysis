@@ -635,7 +635,7 @@
     },
     "46.4.138.103": {
         "connected": false,
-        "count_failures": 7
+        "count_failures": 98
     },
     "52.68.205.184": {
         "connected": false,
@@ -852,9 +852,9 @@
     },
     "49.247.36.143": {
         "connected": false,
-        "count_success": 3,
+        "count_success": 94,
         "type": "SOCKET",
-        "count_failures": 1,
+        "count_failures": 92,
         "server_state": "connected"
     },
     "52.32.149.27": {
@@ -878,7 +878,7 @@
     },
     "r.ripple.com": {
         "connected": true,
-        "count_success": 6,
+        "count_success": 97,
         "type": "HTTP",
         "server_state": "full"
     }

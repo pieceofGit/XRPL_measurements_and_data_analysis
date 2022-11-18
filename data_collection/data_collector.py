@@ -124,7 +124,7 @@ class DataCollector:
         """Periodically fetches data from nodes based on an interval with http or socket"""
         self.get_peers()
         while True:
-            for node in self.test_nodes:
+            for node in self.nodes:
                 if node.get("ip", 0):
                     ip = node["ip"]
                     # for port in ports:
